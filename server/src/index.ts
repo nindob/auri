@@ -121,13 +121,6 @@ import {
   
         if (parsedMessage.type === Action.NTPRequest) {
           // Only log NTP requests occasionally (every 100 requests)
-          let ntpRequestCount = 0;
-          ntpRequestCount++;
-  
-          if (ntpRequestCount % 100 === 0) {
-            console.log(`NTP request received (count: ${ntpRequestCount})`);
-          }
-  
           const ntpRequest = parsedMessage as NTPRequestMessage;
           const ntpResponse = {
             type: Action.NTPResponse,
