@@ -84,7 +84,7 @@ export const Syncer = () => {
     const loadAudio = async () => {
       try {
         setLoadingState("loading");
-        const response = await fetch("/chess.mp3");
+        const response = await fetch("/alien.mp3");
         const arrayBuffer = await response.arrayBuffer();
         const audioBuffer = await context.decodeAudioData(arrayBuffer);
         audioBufferRef.current = audioBuffer;
