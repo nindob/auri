@@ -1,13 +1,16 @@
 {
     "name": "server",
     "scripts": {
-      "dev": "bun run --hot src/index.ts",
-      "start": "bun run src/index.ts"
+        "dev": "bun run --hot src/index.ts",
+        "start": "bun run src/index.ts"
     },
     "dependencies": {
-      "hono": "^4.7.2"
+        "hono": "^4.7.2",
+        "http-cookie-agent": "4.0.0",
+        "tough-cookie": "5.1.2",
+        "ytdl-core": "^4.11.5"
     },
     "devDependencies": {
-      "@types/bun": "latest"
+        "@types/bun": "latest"
     }
-  }
+}
