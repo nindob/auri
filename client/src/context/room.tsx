@@ -29,7 +29,6 @@ export function useRoom() {
   }
   return context;
 }
-
 interface RoomProviderProps {
   children: ReactNode;
 }
