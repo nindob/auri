@@ -13,13 +13,25 @@ const serializeMessage = (message: ClientMessage): string => {
   return JSON.stringify(message);
 };
 
+const waitForOpenSocket = (socket: WebSocket) => {
+  return new Promise<void>((resolve) => {
+    if (socket.readyState !== WebSocket.OPEN) {
+      socket.onopen = () => {
+        resolve();
+      };
+    } else {
+      resolve();
+    }
+  });
+};
+
 export const Syncer = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    const newSocket = new WebSocket(process.env.NEXT_PUBLIC_WS_URL!);
+    const newSocket = new WebSocket("ws://localhost:8080/ws");
 
     newSocket.onopen = () => {
       console.log("Connected to WebSocket");
@@ -44,22 +56,24 @@ export const Syncer = () => {
     setSocket(newSocket);
 
     // Preload audio
-    audioRef.current = new Audio("/chess.mp3");
+    audioRef.current = new Audio("/alien.mp3");
 
     return () => {
       newSocket.close();
     };
   }, []);
 
-  const handlePlay = () => {
+  const handlePlay = async () => {
     if (socket) {
-      socket?.send(serializeMessage({ type: Action.Play }));
+      await waitForOpenSocket(socket);
+      socket.send(serializeMessage({ type: Action.Play }));
     }
   };
 
-  const handlePause = () => {
+  const handlePause = async () => {
     if (socket) {
-      socket?.send(serializeMessage({ type: Action.Pause }));
+      await waitForOpenSocket(socket);
+      socket.send(serializeMessage({ type: Action.Pause }));
     }
   };
 
