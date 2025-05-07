@@ -17,19 +17,15 @@ import {
   }) => {
     return (
       <div className="mt-4 mb-4">
-        <Select
-          value={selectedTrack}
-          onValueChange={onTrackChange}
-          defaultValue="/4EVA.mp3"
-        >
+        <Select value={selectedTrack} onValueChange={onTrackChange}>
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Select track" />
           </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="/4EVA.mp3">4EVA</SelectItem>
-          <SelectItem value="/love for you.mp3">Love for You</SelectItem>
-          <SelectItem value="/New Patek.mp3">New Patek</SelectItem>
-        </SelectContent>
+          <SelectContent>
+            <SelectItem value="4EVA - Ordley">4EVA</SelectItem>
+            <SelectItem value="Love for You - loveli lori & ovg!">Love for You</SelectItem>
+            <SelectItem value="New Patek - Lil Uzi Vert">New Patek</SelectItem>
+          </SelectContent>
         </Select>
       </div>
     );
