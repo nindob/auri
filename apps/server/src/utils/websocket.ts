@@ -1,4 +1,4 @@
-import { WSMessage, WSRequestSchema } from "@shared/types";
+import { WSMessage, WSRequestSchema } from "@auri/shared";
 
 export interface WSData {
   roomId: string;

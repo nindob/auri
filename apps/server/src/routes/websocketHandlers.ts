@@ -3,7 +3,7 @@ import {
   NTPRequestMessage,
   WSMessage,
   WSResponse,
-} from "@shared/types";
+} from "@auri/shared";
 import { deserializeMessage, WSData } from "../utils/websocket";
 import { Server, ServerWebSocket } from "bun";
 
