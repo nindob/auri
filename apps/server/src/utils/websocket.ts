@@ -2,7 +2,7 @@ import { WSRequestSchema } from "@auri/shared";
 
 export interface WSData {
   roomId: string;
-  userId: string;
+  clientId: string;
   username: string;
 }
 

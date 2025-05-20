@@ -6,3 +6,7 @@ node_modules
 
 # uploads in server
 apps/server/uploads/*
+
+# Next.js build output
+.next
+**/.next
