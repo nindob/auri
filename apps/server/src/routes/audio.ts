@@ -1,4 +1,4 @@
-import { GetAudioSchema } from "@auri/shared/types";
+import { GetAudioSchema } from "@auri/shared";
 import { Server } from "bun";
 import * as path from "path";
 import { errorResponse } from "../utils/responses";
