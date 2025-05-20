@@ -5,7 +5,7 @@
       "start": "bun run src/index.ts"
     },
     "dependencies": {
-      "@beatsync/shared": "workspace:*",
+      "@auri/shared": "workspace:*",
       "@distube/ytdl-core": "^4.16.4",
       "hono": "^4.7.2",
       "nanoid": "^5.1.5",

@@ -74,7 +74,7 @@ export const SyncProgress = ({
           transition={{ duration: 0.3 }}
         >
           <h2 className="text-2xl font-mono uppercase tracking-tight mb-4 text-black">
-            BEATSYNC READY
+            AURI READY
           </h2>
           <div className="w-full h-px bg-black mb-4"></div>
           <p className="font-mono text-black mb-8 text-center uppercase text-sm">
@@ -107,7 +107,7 @@ export const SyncProgress = ({
         transition={{ duration: 0.3 }}
       >
         <h2 className="text-2xl font-mono uppercase tracking-tight mb-4 text-black">
-          BEATSYNC CALIBRATING
+          AURI CALIBRATING
         </h2>
         <div className="w-full h-px bg-black mb-4"></div>
 

@@ -1,21 +1,56 @@
-// 1:1 Private WS Responses
 import { z } from "zod";
 
-const NTPResponseMessageSchema = z.object({
-  type: z.literal("NTP_RESPONSE"),
-  t0: z.number(), // Client send timestamp (echoed back)
-  t1: z.number(), // Server receive timestamp
-  t2: z.number(), // Server send timestamp
-});
-export type NTPResponseMessageType = z.infer<typeof NTPResponseMessageSchema>;
-
-const SetClientID = z.object({
-  type: z.literal("SET_CLIENT_ID"),
+export const ClientSchema = z.object({
+  username: z.string(),
   clientId: z.string(),
 });
 
-export const WSUnicastSchema = z.discriminatedUnion("type", [
-  NTPResponseMessageSchema,
-  SetClientID,
+export const ClientActionEnum = z.enum([
+  "PLAY",
+  "PAUSE",
+  "CLIENT_CHANGE",
+  "NTP_REQUEST",
+  "START_SPATIAL_AUDIO",
 ]);
-export type WSUnicastType = z.infer<typeof WSUnicastSchema>;
+
+export const NTPRequestPacketSchema = z.object({
+  type: z.literal(ClientActionEnum.enum.NTP_REQUEST),
+  t0: z.number(), // Client send timestamp
+});
+
+export const NTPResponseSchema = z.object({
+  type: z.literal("NTP_RESPONSE"),
+  t0: z.number(), // Client send timestamp
+  t1: z.number(), // Server receive timestamp
+  t2: z.number(), // Server send timestamp
+});
+
+export const PlayActionSchema = z.object({
+  type: z.literal(ClientActionEnum.enum.PLAY),
+  trackTimeSeconds: z.number(),
+  trackIndex: z.number(),
+});
+
+export const PauseActionSchema = z.object({
+  type: z.literal(ClientActionEnum.enum.PAUSE),
+});
+
+const StartSpatialAudioSchema = z.object({
+  type: z.literal(ClientActionEnum.enum.START_SPATIAL_AUDIO),
+});
+
+export const WSRequestSchema = z.discriminatedUnion("type", [
+  PlayActionSchema,
+  PauseActionSchema,
+  NTPRequestPacketSchema,
+  StartSpatialAudioSchema,
+]);
+export type WSRequestType = z.infer<typeof WSRequestSchema>;
+
+export const WSUnicastSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("UNICAST"),
+    payload: WSRequestSchema,
+  }),
+  NTPResponseSchema,
+]);
