@@ -35,8 +35,12 @@ interface GlobalState {
   audioSources: LocalAudioSource[];
   isLoadingAudio: boolean;
   selectedSourceIndex: number;
-  uploadHistory: { name: string; timestamp: number }[];
-  addToUploadHistory: (name: string) => void;
+  uploadHistory: { name: string; timestamp: number; id: string }[];
+  downloadedAudioIds: Set<string>;
+  addToUploadHistory: (name: string, id: string) => void;
+  reuploadAudio: (audioId: string, audioName: string) => void;
+  hasDownloadedAudio: (id: string) => boolean;
+  markAudioAsDownloaded: (id: string) => void;
   setAudioSources: (sources: LocalAudioSource[]) => void;
   addAudioSource: (source: RawAudioSource) => Promise<void>;
   setIsLoadingAudio: (isLoading: boolean) => void;
@@ -94,9 +98,9 @@ interface GlobalState {
 
 // Audio sources
 const STATIC_AUDIO_SOURCES: StaticAudioSource[] = [
-  { name: "Trndsttr (Lucian Remix)", url: "/trndsttr.mp3" },
-  { name: "Wonder", url: "/wonder.mp3" },
-  { name: "Chess", url: "/chess.mp3" },
+  { name: "4EVA - Ordley", url: "/4EVA.mp3" },
+  { name: "Love for You - loveli lori & ovg!", url: "/love for you.mp3" },
+  { name: "New Patek - Lil Uzi Vert", url: "/New Patek.mp3" },
 ];
 
 const getAudioPlayer = (state: GlobalState) => {
@@ -168,6 +172,7 @@ export const useGlobalStore = create<GlobalState>((set, get) => {
           sourceNode,
           gainNode,
         },
+        downloadedAudioIds: new Set<string>(),
       });
     };
 
@@ -180,13 +185,38 @@ export const useGlobalStore = create<GlobalState>((set, get) => {
     isLoadingAudio: true,
     selectedSourceIndex: 0,
     uploadHistory: [],
-    addToUploadHistory: (name) =>
+    downloadedAudioIds: new Set<string>(),
+    addToUploadHistory: (name, id) =>
       set((state) => ({
         uploadHistory: [
           ...state.uploadHistory,
-          { name, timestamp: Date.now() },
+          { name, timestamp: Date.now(), id },
         ],
       })),
+    reuploadAudio: (audioId, audioName) => {
+      const state = get();
+      const { socket } = getSocket(state);
+
+      sendWSRequest({
+        ws: socket,
+        request: {
+          type: ClientActionEnum.enum.REUPLOAD_AUDIO,
+          audioId,
+          audioName,
+        },
+      });
+    },
+    hasDownloadedAudio: (id) => {
+      const state = get();
+      return state.downloadedAudioIds.has(id);
+    },
+    markAudioAsDownloaded: (id) => {
+      set((state) => {
+        const newSet = new Set(state.downloadedAudioIds);
+        newSet.add(id);
+        return { downloadedAudioIds: newSet };
+      });
+    },
     setAudioSources: (sources) => set({ audioSources: sources }),
     addAudioSource: async (source: RawAudioSource) => {
       const state = get();
@@ -204,7 +234,9 @@ export const useGlobalStore = create<GlobalState>((set, get) => {
         );
 
         // Add to upload history when adding an audio source
-        state.addToUploadHistory(source.name);
+        // If this has an ID, mark it as downloaded
+        state.markAudioAsDownloaded(source.id);
+        state.addToUploadHistory(source.name, source.id);
 
         set((state) => ({
           audioSources: [
