@@ -38,7 +38,7 @@ export const TopBar = () => {
             href="/"
             className="font-medium hover:text-white transition-colors"
           >
-            Beatsync
+            Auri
           </Link>
           <div className="flex items-center">
             <div className="h-1.5 w-1.5 rounded-full bg-green-500 mr-1.5 animate-pulse"></div>
