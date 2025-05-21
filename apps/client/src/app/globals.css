@@ -43,6 +43,11 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* Sound wave animations */
+  --animate-sound-wave-1: sound-wave-1 1.2s ease-in-out infinite;
+  --animate-sound-wave-2: sound-wave-2 1.4s ease-in-out infinite;
+  --animate-sound-wave-3: sound-wave-3 1s ease-in-out infinite;
 }
 
 :root {
@@ -144,13 +149,48 @@
       opacity: 0;
     }
   }
+
+  /* Sound wave animations */
+  @keyframes sound-wave-1 {
+    0%,
+    100% {
+      height: 40%;
+    }
+    50% {
+      height: 70%;
+    }
+  }
+
+  @keyframes sound-wave-2 {
+    0%,
+    100% {
+      height: 80%;
+    }
+    50% {
+      height: 40%;
+    }
+  }
+
+  @keyframes sound-wave-3 {
+    0%,
+    100% {
+      height: 60%;
+    }
+    33% {
+      height: 80%;
+    }
+    66% {
+      height: 30%;
+    }
+  }
 }
 
 @theme inline {
   --font-sans: var(--font-inter);
   /* --font-suisse: var(--font-suisse-intl);
   --font-circular: var(--font-circular-std);
-  --font-sofia: var(--font-sofia-pro); */
+  --font-sofia: var(--font-sofia-pro);
+  --font-proxima: var(--font-proxima-nova); */
 
   /* Indigo */
   --color-primary-50: oklch(96.19% 0.0179 272.31);
