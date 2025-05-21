@@ -110,11 +110,25 @@ const STATIC_AUDIO_SOURCES: StaticAudioSource[] = [
     url: "/4EVA.mp3",
     id: "static-0",
   },
-  { name: "Love for You - loveli lori & ovg!", url: "/love for you.mp3", id: "static-1" },
+  {
+    name: "Love for You - loveli lori & ovg!",
+    url: "/love for you.mp3",
+    id: "static-1",
+  },
   {
     name: "I LOVE YOU SO JUMPSTYLE (Slowed) - HUSSVRX",
     url: "/I LOVE YOU SO JUMPSTYLE (Slowed).mp3",
     id: "static-2",
+  },
+  {
+    name: "Heartbreaker - Bimini",
+    url: "/Heartbreaker - Bimini.mp3",
+    id: "static-3",
+  },
+  {
+    name: "say you'll never leave - jigitz",
+    url: "/say you'll never leave - jigitz.mp3",
+    id: "static-4",
   },
 ];
 
