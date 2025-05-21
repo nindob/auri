@@ -38,7 +38,7 @@ export const TopBar = () => {
             href="/"
             className="font-medium hover:text-white transition-colors"
           >
-            Auri
+            Beatsync
           </Link>
           <div className="flex items-center">
             <div className="h-1.5 w-1.5 rounded-full bg-green-500 mr-1.5 animate-pulse"></div>
@@ -57,17 +57,21 @@ export const TopBar = () => {
               </span>
             </span>
           </div>
-          <div>|</div>
-          <div className="flex items-center space-x-2">
+          {/* Hide separator on small screens */}
+          <div className="hidden md:block">|</div>
+          {/* Hide Offset/RTT on small screens */}
+          <div className="hidden md:flex items-center space-x-2">
             <span>
               Offset: <span>{offsetEstimate.toFixed(2)}</span>ms
             </span>
             <span>RTT: {roundTripEstimate.toFixed(2)} ms</span>
           </div>
-          <div>|</div>
+          {/* Hide separator on small screens */}
+          <div className="hidden md:block">|</div>
+          {/* Hide Full Sync button on small screens */}
           <button
             onClick={resync}
-            className="text-neutral-400 hover:text-white transition-colors cursor-pointer"
+            className="hidden md:block text-neutral-400 hover:text-white transition-colors cursor-pointer"
           >
             Full Sync
           </button>
