@@ -214,7 +214,7 @@ export const useGlobalStore = create<GlobalState>((set, get) => {
     // Audio Sources
     audioSources: [],
     isLoadingAudio: true,
-    selectedAudioId: "static-0",
+    selectedAudioId: STATIC_AUDIO_SOURCES[0].id,
     uploadHistory: [],
     downloadedAudioIds: new Set<string>(),
     addToUploadHistory: (name, id) =>
@@ -451,7 +451,7 @@ export const useGlobalStore = create<GlobalState>((set, get) => {
           roundTripEstimate: averageRoundTrip,
           isSynced: true,
         });
-        
+
         // Send the average RTT to the server after all measurements are complete
         const { socket } = getSocket(state);
         console.log(`Sending average RTT of ${averageRoundTrip}ms to server`);
