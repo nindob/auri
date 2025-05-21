@@ -147,11 +147,10 @@
 }
 
 @theme inline {
-  /* --font-sans: var(--font-proxima-nova);
-  --font-suisse: var(--font-suisse-intl);
+  --font-sans: var(--font-inter);
+  /* --font-suisse: var(--font-suisse-intl);
   --font-circular: var(--font-circular-std);
-  --font-sofia: var(--font-sofia-pro);
-  --font-proxima: var(--font-proxima-nova); */
+  --font-sofia: var(--font-sofia-pro); */
 
   /* Indigo */
   --color-primary-50: oklch(96.19% 0.0179 272.31);
