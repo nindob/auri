@@ -10,3 +10,5 @@ apps/server/uploads/*
 # Next.js build output
 .next
 **/.next
+
+.DS_Store
