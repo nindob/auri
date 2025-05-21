@@ -2,7 +2,7 @@ import { useGlobalStore } from "@/store/global";
 import { motion } from "framer-motion";
 import { Queue } from "../Queue";
 import { Player } from "../room/Player";
-import { SyncStatus } from "../room/SyncStatus";
+import { TopBar } from "../room/TopBar";
 import { UserGrid } from "../room/UserGrid";
 import { Left } from "./Left";
 
@@ -15,7 +15,7 @@ export const Dashboard = () => {
   return (
     <div className="w-full h-screen flex flex-col text-white bg-neutral-950">
       {/* Top sync status bar */}
-      <SyncStatus />
+      <TopBar />
 
       {isReady && (
         <motion.div
@@ -31,7 +31,7 @@ export const Dashboard = () => {
             {/* Main content */}
             <div className="flex-1 overflow-y-auto bg-gradient-to-b from-neutral-900/50 to-neutral-950 backdrop-blur-sm">
               <div className="p-6 max-w-3xl mx-auto">
-                <h1 className="text-xl font-semibold mb-8">BeatSync</h1>
+                <h1 className="text-xl font-semibold mb-8">Auri</h1>
                 <Queue
                   className="mb-8"
                   onItemClick={(item) =>
