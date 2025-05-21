@@ -13,6 +13,7 @@ import { LogIn, PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 interface JoinFormData {
   roomId: string;
@@ -46,7 +47,7 @@ export const Join = () => {
     setIsJoining(true);
     // Validate roomId
     if (!validateFullRoomId(data.roomId)) {
-      alert("Invalid room ID");
+      toast.error("Invalid room code. Please enter 6 digits.");
       setIsJoining(false);
       return;
     }
@@ -59,7 +60,7 @@ export const Join = () => {
 
   const handleCreateRoom = () => {
     if (!username) {
-      alert("Please enter a username first");
+      toast.error("Please enter a username first");
       usernameInputRef.current?.focus();
       return;
     }
@@ -94,7 +95,7 @@ export const Join = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3, delay: 0.1 }}
           >
-            Join an Auri Room
+            Join a Beatsync Room
           </motion.h2>
 
           <motion.p
