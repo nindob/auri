@@ -1,6 +1,6 @@
 "use client";
 import { useGlobalStore } from "@/store/global";
-import { Hash, Users } from "lucide-react";
+import { Github, Hash, Users } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { SyncProgress } from "../ui/SyncProgress";
@@ -33,13 +33,13 @@ export const TopBar = ({ roomId }: TopBarProps) => {
   // Show minimal nav bar when synced and not loading
   if (!isLoadingAudio && isSynced) {
     return (
-      <div className="h-8 bg-black/80 backdrop-blur-md z-50 flex items-center px-4 border-b border-zinc-800">
+      <div className="h-8 bg-black/80 backdrop-blur-md z-50 flex items-center justify-between px-4 border-b border-zinc-800">
         <div className="flex items-center space-x-4 text-xs text-neutral-400 py-2 md:py-0">
           <Link
             href="/"
             className="font-medium hover:text-white transition-colors"
           >
-            Auri
+            Beatsync
           </Link>
           <div className="flex items-center">
             <div className="h-1.5 w-1.5 rounded-full bg-green-500 mr-1.5 animate-pulse"></div>
@@ -77,6 +77,16 @@ export const TopBar = ({ roomId }: TopBarProps) => {
             Full Sync
           </button>
         </div>
+
+        {/* GitHub icon in the top right */}
+        <a
+          href="https://github.com/freeman-jiang/beatsync"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-neutral-400 hover:text-white transition-colors"
+        >
+          <Github size={16} />
+        </a>
       </div>
     );
   }
