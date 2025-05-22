@@ -1,60 +1,45 @@
-import { PositionType } from "@auri/shared/types/basic";
+import { ClientType, GRID } from "@auri/shared";
 
-function calculateEuclideanDistance(
-  p1: PositionType,
-  p2: PositionType
-): number {
-  const dx = p1.x - p2.x;
-  const dy = p1.y - p2.y;
-  return Math.sqrt(dx * dx + dy * dy);
+/**
+ * Positions clients in a circle around a center point
+ * @param clients Map of clients to position
+ */
+export function positionClientsInCircle(
+  clients: Map<string, ClientType>
+): void {
+  const clientCount = clients.size;
+
+  // Early return for single client case
+  if (clientCount === 1) {
+    // Center the single client explicitly
+    const client = clients.values().next().value!;
+    client.position = {
+      x: GRID.ORIGIN_X,
+      y: GRID.ORIGIN_Y - 25,
+    };
+    return;
+  }
+
+  // Position multiple clients in a circle
+  let index = 0;
+  clients.forEach((client) => {
+    // Calculate position on the circle
+    const angle = (index / clientCount) * 2 * Math.PI - Math.PI / 2;
+    client.position = {
+      x: GRID.ORIGIN_X + GRID.CLIENT_RADIUS * Math.cos(angle),
+      y: GRID.ORIGIN_Y + GRID.CLIENT_RADIUS * Math.sin(angle),
+    };
+    index++;
+  });
 }
 
-interface GainParams {
-  client: PositionType;
-  source: PositionType;
-  falloff?: number;
-  minGain?: number;
-  maxGain?: number;
-}
-
-export const calculateGainFromDistanceToSource = (params: GainParams) => {
-  return gainFromDistanceQuadratic(params);
-};
-
-export function gainFromDistanceExp({
-  client,
-  source,
-  falloff = 0.05,
-  minGain = 0.15,
-  maxGain = 1.0,
-}: GainParams): number {
-  const distance = calculateEuclideanDistance(client, source);
-  const gain = maxGain * Math.exp(-falloff * distance);
-  return Math.max(minGain, gain);
-}
-
-export function gainFromDistanceLinear({
-  client,
-  source,
-  falloff = 0.01,
-  minGain = 0.15,
-  maxGain = 1.0,
-}: GainParams): number {
-  const distance = calculateEuclideanDistance(client, source);
-  // Linear falloff: gain decreases linearly with distance
-  const gain = maxGain - falloff * distance;
-  return Math.max(minGain, gain);
-}
-
-export function gainFromDistanceQuadratic({
-  client,
-  source,
-  falloff = 0.001,
-  minGain = 0.15,
-  maxGain = 1.0,
-}: GainParams): number {
-  const distance = calculateEuclideanDistance(client, source);
-  // Quadratic falloff: gain decreases with square of distance
-  const gain = maxGain - falloff * distance * distance;
-  return Math.max(minGain, gain);
+/**
+ * Debug function to print client positions
+ * @param clients Map of clients to debug
+ */
+export function debugClientPositions(clients: Map<string, ClientType>): void {
+  console.log("Client Positions:");
+  clients.forEach((client, id) => {
+    console.log(`Client ${id}: x=${client.position.x}, y=${client.position.y}`);
+  });
 }
