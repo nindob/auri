@@ -153,6 +153,11 @@ const STATIC_AUDIO_SOURCES: StaticAudioSource[] = [
     url: "/say you'll never leave - jigitz.mp3",
     id: "static-4",
   },
+  {
+    name: "Assumptions (Slowed) - Sam Gellaitry",
+    url: "/Assumptions (Slowed).mp3",
+    id: "static-5",
+  },
 ];
 
 const getAudioPlayer = (state: GlobalState) => {
