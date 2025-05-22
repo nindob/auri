@@ -131,32 +131,37 @@ const STATIC_AUDIO_SOURCES: StaticAudioSource[] = [
   {
     name: "4EVA - Ordley",
     url: "/4EVA.mp3",
-    id: "static-0",
+    id: `static-${0}`,
   },
   {
     name: "Love for You - loveli lori & ovg!",
     url: "/love for you.mp3",
-    id: "static-1",
+    id: `static-${1}`,
   },
   {
     name: "I LOVE YOU SO JUMPSTYLE (Slowed) - HUSSVRX",
     url: "/I LOVE YOU SO JUMPSTYLE (Slowed).mp3",
-    id: "static-2",
+    id: `static-${2}`,
   },
   {
     name: "Heartbreaker - Bimini",
     url: "/Heartbreaker - Bimini.mp3",
-    id: "static-3",
+    id: `static-${3}`,
   },
   {
     name: "say you'll never leave - jigitz",
     url: "/say you'll never leave - jigitz.mp3",
-    id: "static-4",
+    id: `static-${4}`,
   },
   {
     name: "Assumptions (Slowed) - Sam Gellaitry",
     url: "/Assumptions (Slowed).mp3",
-    id: "static-5",
+    id: `static-${5}`,
+  },
+  {
+    name: "Laika Party - EMMY",
+    url: "/Laika Party - EMMY.mp3",
+    id: `static-${6}`,
   },
 ];
 
