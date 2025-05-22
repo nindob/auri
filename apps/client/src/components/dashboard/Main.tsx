@@ -11,7 +11,7 @@ export const Main = () => {
       )}
     >
       <motion.div className="p-6 pt-4">
-        {/* <h1 className="text-xl font-semibold mb-8">BeatSync</h1> */}
+        {/* <h1 className="text-xl font-semibold mb-8">Auri</h1> */}
         <Queue className="mb-8" />
       </motion.div>
     </motion.div>
