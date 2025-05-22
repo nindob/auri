@@ -85,6 +85,7 @@ interface GlobalState extends GlobalStateValues {
   setIsInitingSystem: (isIniting: boolean) => void;
   addToUploadHistory: (name: string, id: string) => void;
   reuploadAudio: (audioId: string, audioName: string) => void;
+  reorderClient: (clientId: string) => void;
   hasDownloadedAudio: (id: string) => boolean;
   markAudioAsDownloaded: (id: string) => void;
   setAudioSources: (sources: LocalAudioSource[]) => void;
@@ -126,45 +127,40 @@ interface GlobalState extends GlobalStateValues {
   getCurrentGainValue: () => number;
   resetStore: () => void;
 }
-
 // Audio sources
 const STATIC_AUDIO_SOURCES: StaticAudioSource[] = [
   {
     name: "4EVA - Ordley",
     url: "/4EVA.mp3",
-    id: `static-${0}`,
   },
   {
     name: "Love for You - loveli lori & ovg!",
     url: "/love for you.mp3",
-    id: `static-${1}`,
   },
   {
     name: "I LOVE YOU SO JUMPSTYLE (Slowed) - HUSSVRX",
     url: "/I LOVE YOU SO JUMPSTYLE (Slowed).mp3",
-    id: `static-${2}`,
   },
   {
     name: "Heartbreaker - Bimini",
     url: "/Heartbreaker - Bimini.mp3",
-    id: `static-${3}`,
   },
   {
     name: "say you'll never leave - jigitz",
     url: "/say you'll never leave - jigitz.mp3",
-    id: `static-${4}`,
   },
   {
     name: "Assumptions (Slowed) - Sam Gellaitry",
     url: "/Assumptions (Slowed).mp3",
-    id: `static-${5}`,
   },
   {
     name: "Laika Party - EMMY",
     url: "/Laika Party - EMMY.mp3",
-    id: `static-${6}`,
   },
-];
+].map((source, index) => ({
+  ...source,
+  id: `static-${index}`,
+}));
 
 // Define initial state values
 const initialState: GlobalStateValues = {
@@ -329,6 +325,19 @@ export const useGlobalStore = create<GlobalState>((set, get) => {
           type: ClientActionEnum.enum.REUPLOAD_AUDIO,
           audioId,
           audioName,
+        },
+      });
+    },
+
+    reorderClient: (clientId) => {
+      const state = get();
+      const { socket } = getSocket(state);
+
+      sendWSRequest({
+        ws: socket,
+        request: {
+          type: ClientActionEnum.enum.REORDER_CLIENT,
+          clientId,
         },
       });
     },
