@@ -1,4 +1,4 @@
-import { PositionType } from "@auri/shared";
+import { PositionType } from "@auri/shared/types/basic";
 
 function calculateEuclideanDistance(
   p1: PositionType,
