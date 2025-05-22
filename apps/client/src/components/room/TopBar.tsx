@@ -39,7 +39,7 @@ export const TopBar = ({ roomId }: TopBarProps) => {
             href="/"
             className="font-medium hover:text-white transition-colors"
           >
-            Beatsync
+            Auri
           </Link>
           <div className="flex items-center">
             <div className="h-1.5 w-1.5 rounded-full bg-green-500 mr-1.5 animate-pulse"></div>
@@ -80,7 +80,7 @@ export const TopBar = ({ roomId }: TopBarProps) => {
 
         {/* GitHub icon in the top right */}
         <a
-          href="https://github.com/freeman-jiang/beatsync"
+          href="https://github.com/nindob/auri"
           target="_blank"
           rel="noopener noreferrer"
           className="text-neutral-400 hover:text-white transition-colors"
