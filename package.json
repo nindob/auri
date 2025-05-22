@@ -19,6 +19,8 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "posthog-js": "^1.246.0",
+    "posthog-node": "^4.17.2",
     "turbo": "^2.4.4"
   }
 }

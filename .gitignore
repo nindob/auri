@@ -12,3 +12,4 @@ apps/server/uploads/*
 **/.next
 
 .DS_Store
+.env
