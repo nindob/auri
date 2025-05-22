@@ -11,10 +11,8 @@ Auri is a browser-based audio player optimized for seamless multi-device playbac
 - **Self-hostable**: Run your own instance with a few commands
 
 
-> [!WARNING]
-> Auri is in early development. Currently, only desktop Chrome browsers are fully supported.
->
-> Mobile device synchronization is experimental and may be unstable.
+> [!NOTE]
+> Auri is in early development. Mobile support is working, but experimental. Please consider creating an issue or contributing with a PR if you run into problems!
 
 ## Quickstart
 
