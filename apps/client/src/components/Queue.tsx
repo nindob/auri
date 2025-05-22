@@ -1,51 +1,60 @@
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-  } from "@/components/ui/dropdown-menu";
-  import { LocalAudioSource } from "@/lib/localTypes";
-  import { cn, formatTime } from "@/lib/utils";
-  import { useGlobalStore } from "@/store/global";
-  import { MoreHorizontal, Pause, Play, UploadCloud } from "lucide-react";
-  
-  export const Queue = ({ className, ...rest }: React.ComponentProps<"div">) => {
-    const audioSources = useGlobalStore((state) => state.audioSources);
-    const selectedAudioId = useGlobalStore((state) => state.selectedAudioId);
-    const setSelectedAudioId = useGlobalStore(
-      (state) => state.setSelectedAudioId
-    );
-    const isLoadingAudioSources = useGlobalStore((state) => state.isLoadingAudio);
-    const broadcastPlay = useGlobalStore((state) => state.broadcastPlay);
-    const broadcastPause = useGlobalStore((state) => state.broadcastPause);
-    const isPlaying = useGlobalStore((state) => state.isPlaying);
-    const reuploadAudio = useGlobalStore((state) => state.reuploadAudio);
-  
-    const handleItemClick = (source: LocalAudioSource) => {
-      if (source.id === selectedAudioId) {
-        if (isPlaying) {
-          broadcastPause();
-        } else {
-          broadcastPlay();
-        }
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { LocalAudioSource } from "@/lib/localTypes";
+import { cn, formatTime } from "@/lib/utils";
+import { useGlobalStore } from "@/store/global";
+import { MoreHorizontal, Pause, Play, UploadCloud } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+
+export const Queue = ({ className, ...rest }: React.ComponentProps<"div">) => {
+  const audioSources = useGlobalStore((state) => state.audioSources);
+  const selectedAudioId = useGlobalStore((state) => state.selectedAudioId);
+  const setSelectedAudioId = useGlobalStore(
+    (state) => state.setSelectedAudioId
+  );
+  const isInitingSystem = useGlobalStore((state) => state.isInitingSystem);
+  const broadcastPlay = useGlobalStore((state) => state.broadcastPlay);
+  const broadcastPause = useGlobalStore((state) => state.broadcastPause);
+  const isPlaying = useGlobalStore((state) => state.isPlaying);
+  const reuploadAudio = useGlobalStore((state) => state.reuploadAudio);
+
+  const handleItemClick = (source: LocalAudioSource) => {
+    if (source.id === selectedAudioId) {
+      if (isPlaying) {
+        broadcastPause();
       } else {
-        setSelectedAudioId(source.id);
-        broadcastPlay(0);
+        broadcastPlay();
       }
-    };
-  
-    return (
-      <div className={cn("", className)} {...rest}>
-        {/* <h2 className="text-xl font-bold mb-2 select-none">Auri</h2> */}
-        <div className="space-y-1">
-          {audioSources.length > 0 ? (
-            audioSources.map((source, index) => {
+    } else {
+      setSelectedAudioId(source.id);
+      broadcastPlay(0);
+    }
+  };
+
+  return (
+    <div className={cn("", className)} {...rest}>
+      {/* <h2 className="text-xl font-bold mb-2 select-none">Auri</h2> */}
+      <div className="space-y-1">
+        {audioSources.length > 0 ? (
+          <AnimatePresence initial={true}>
+            {audioSources.map((source, index) => {
               const isSelected = source.id === selectedAudioId;
               const isPlayingThis = isSelected && isPlaying;
-  
+
               return (
-                <div
+                <motion.div
                   key={source.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.4,
+                    delay: 0.05 * index,
+                    ease: "easeOut",
+                  }}
                   className={cn(
                     "flex items-center pl-2 pr-4 py-3 rounded-md group transition-colors select-none",
                     isSelected
@@ -64,7 +73,7 @@ import {
                         <Play className="fill-current size-3.5" />
                       )}
                     </button>
-  
+
                     {/* Playing indicator or track number (hidden on hover) */}
                     <div className="w-full h-full flex items-center justify-center group-hover:opacity-0 select-none">
                       {isPlayingThis ? (
@@ -85,7 +94,7 @@ import {
                       )}
                     </div>
                   </div>
-  
+
                   {/* Track name */}
                   <div className="flex-grow min-w-0 ml-3 select-none">
                     <div
@@ -97,13 +106,13 @@ import {
                       {source.name}
                     </div>
                   </div>
-  
+
                   {/* Duration & Optional Re-upload Menu */}
                   <div className="ml-4 flex items-center gap-2">
                     <div className="text-xs text-neutral-500 select-none">
                       {formatTime(source.audioBuffer.duration)}
                     </div>
-  
+
                     {/* Dropdown for re-uploading - Always shown */}
                     <DropdownMenu>
                       <DropdownMenuTrigger
@@ -129,17 +138,20 @@ import {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
-                </div>
+                </motion.div>
               );
-            })
-          ) : (
-            <div className="text-center py-3 text-neutral-400 select-none">
-              {isLoadingAudioSources
-                ? "Loading tracks..."
-                : "No tracks available"}
-            </div>
-          )}
-        </div>
+            })}
+          </AnimatePresence>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-3 text-neutral-400 select-none"
+          >
+            {isInitingSystem ? "Loading tracks..." : "No tracks available"}
+          </motion.div>
+        )}
       </div>
-    );
-  };
+    </div>
+  );
+};
