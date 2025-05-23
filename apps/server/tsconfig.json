@@ -3,6 +3,12 @@
     "strict": true,
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
-    "target": "ES2024"
+    "target": "ES2024",
+    "baseUrl": ".",
+    "paths": {
+      "@auri/shared": ["../../packages/shared/src/index"]
+    },
+    "outDir": "dist",
+    "moduleResolution": "bundler",
   }
 }

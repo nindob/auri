@@ -17,7 +17,7 @@ export type PositionType = z.infer<typeof PositionSchema>;
 /**
  * Defines a track type.
  */
-export type Track = {
+export interface Track {
   id: number;
   title: string;
   artist: string;

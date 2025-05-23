@@ -1,7 +1,7 @@
 import type { Server } from "bun";
 import { errorResponse, jsonResponse, sendBroadcast } from "../utils/responses";
 import { DownloadTrackSchema } from "@auri/shared";
-import { MUSIC_DOWNLOADER } from "../download/download";
+import { DOWNLOAD_SERVICE } from "../download/dab";
 
 export const handleDownload = async (req: Request, server: Server) => {
   try {
@@ -29,7 +29,7 @@ export const handleDownload = async (req: Request, server: Server) => {
 
     const roomId: string = parseResult.data.roomId;
     const title = parseResult.data.name;
-    const fileId = await MUSIC_DOWNLOADER.download(
+    const fileId = await DOWNLOAD_SERVICE.download(
       parseResult.data.trackId,
       title,
       roomId,
