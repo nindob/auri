@@ -5,7 +5,7 @@ import { Button } from "../ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog"
 import { Input } from "../ui/input"
 import { Track } from "@auri/shared"
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "../ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table"
 import { searchTracks } from "@/lib/api"
 import { Download, Search } from "lucide-react"
 
@@ -16,7 +16,6 @@ type SearchMusicModalProps = {
 
 export const SearchMusicModal = ({opened, setOpened}: SearchMusicModalProps) => {
     const [searchQuery, setSearchQuery] = useState("");
-
     const [searchResults, setSearchResult] = useState<Track[] | null>(null);
 
     const handleSearch = () => {
