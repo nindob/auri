@@ -37,7 +37,7 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({ roomId }: QRCodeModalP
           try {
             await navigator.clipboard.writeText(joinUrl);
             setFeedbackMessage('Link copied!');
-          } catch (copyError) {
+          } catch {
             setFeedbackMessage('Failed to copy link');
           }
         }
@@ -48,7 +48,7 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({ roomId }: QRCodeModalP
       try {
         await navigator.clipboard.writeText(joinUrl);
         setFeedbackMessage('Link copied!');
-      } catch (copyError) {
+      } catch {
         setFeedbackMessage('Failed to copy link');
       }
       clearFeedback();
