@@ -1,4 +1,4 @@
-import { Server } from "bun";
+import type { Server } from "bun";
 import { errorResponse, jsonResponse, sendBroadcast } from "../utils/responses";
 import { DownloadTrackSchema } from "@auri/shared";
 import { MUSIC_DOWNLOADER } from "../download/download";
@@ -23,13 +23,17 @@ export const handleDownload = async (req: Request, server: Server) => {
     if (!parseResult.success) {
       return errorResponse(
         `Invalid request data: ${parseResult.error.message}`,
-        400
+        400,
       );
     }
 
     const roomId: string = parseResult.data.roomId;
     const title = parseResult.data.name;
-    const fileId = await MUSIC_DOWNLOADER.download(parseResult.data.trackId, title, roomId);
+    const fileId = await MUSIC_DOWNLOADER.download(
+      parseResult.data.trackId,
+      title,
+      roomId,
+    );
 
     sendBroadcast({
       server,
