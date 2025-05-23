@@ -6,8 +6,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "../ui/input"
 import { Track } from "@auri/shared"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table"
-import { searchTracks } from "@/lib/api"
+import { downloadTrack, searchTracks } from "@/lib/api"
 import { Download, Search } from "lucide-react"
+import { useRoomStore } from "@/store/room"
 
 type SearchMusicModalProps = {
   opened: boolean,
@@ -30,7 +31,7 @@ export const SearchMusicModal = ({opened, setOpened}: SearchMusicModalProps) => 
       }
       setOpened(o);
       }}>
-    <DialogContent className="sm:max-w-[425px]">
+    <DialogContent className="sm:max-w-[800px]">
       <DialogHeader>
         <DialogTitle>Search tracks</DialogTitle>
         <DialogDescription>
@@ -55,6 +56,18 @@ type ResultsTableProps = {
 }
 
 const ResultsTable = ({results}: ResultsTableProps) => {
+  const roomId = useRoomStore((state) => state.roomId);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownload = async (trackId: number, name: string) => {
+    setIsDownloading(true);
+    downloadTrack({
+      name,
+      roomId,
+      trackId
+    })
+    .finally(() => setIsDownloading(false));
+  }
 
   return <Table>
   <TableHeader>
@@ -67,9 +80,9 @@ const ResultsTable = ({results}: ResultsTableProps) => {
   <TableBody>
     {results.map((track) => (
       <TableRow key={track.id}>
-        <TableCell >{track.title}</TableCell>
-        <TableCell >{track.artist}</TableCell>
-        <TableCell className="text-right"><Button><Download/></Button></TableCell>
+        <TableCell>{track.title}</TableCell>
+        <TableCell>{track.artist}</TableCell>
+        <TableCell className="text-right"><Button disabled={isDownloading} onClick={() => handleDownload(track.id, track.title)}><Download/></Button></TableCell>
       </TableRow>
     ))}
   </TableBody>

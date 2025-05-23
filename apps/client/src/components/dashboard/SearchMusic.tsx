@@ -1,6 +1,5 @@
 "use client"
 import { cn } from "@/lib/utils";
-import { useRoomStore } from "@/store/room";
 import { Search } from "lucide-react";
 import { useState } from "react";
 import { SearchMusicModal } from "./SearchMusicModal";
@@ -8,8 +7,6 @@ import { SearchMusicModal } from "./SearchMusicModal";
 export const SearchMusic = () => {
     const [isHovered, setIsHovered] = useState(false);
     const [modalOpened, setModalOpened] = useState(false);
-    const [fileName, setFileName] = useState<string | null>(null);
-    const roomId = useRoomStore((state) => state.roomId);
   
     return (
       <div

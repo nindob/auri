@@ -1,4 +1,4 @@
-import { Track, UploadAudioType } from "@auri/shared";
+import { DownloadTrackType, Track, UploadAudioType } from "@auri/shared";
 import axios from "axios";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -68,4 +68,20 @@ export const searchTracks = async (query: string): Promise<Track[]> => {
   }
 
   return await response.json();
+}
+
+export const downloadTrack = async (payload: DownloadTrackType) => {
+  const response = await fetch(`${BASE_URL}/download`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to download track: ${response.statusText}`);
+  }
+
+  return response.json();
 }
