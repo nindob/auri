@@ -1,4 +1,10 @@
 {
     "buildCommand": "cd apps/client && next build",
-    "outputDirectory": "apps/client/.next"
+    "outputDirectory": "apps/client/.next",
+    "builds": [
+      {
+        "src": "apps/client/package.json",
+        "use": "@vercel/next"
+      }
+    ]
   }
