@@ -1,4 +1,7 @@
-import type { Pagination, DABTrack as Track } from "@auri/shared/types/schemas/dab"
+import type {
+  Pagination,
+  DABTrack as Track,
+} from "@auri/shared/types/schemas/dab";
 import { AUDIO_DIR } from "../config";
 import { mkdir } from "node:fs/promises";
 import * as path from "node:path";
@@ -10,28 +13,29 @@ import { DownloadService, SearchResult, SearchService } from "./interface";
 class DabMusicService implements SearchService, DownloadService {
   async search(query: string, offset: number): Promise<SearchResult> {
     const urlEncoded = encodeURIComponent(query);
-    console.log("Searching for ", urlEncoded)
-    const { tracks, pagination }: { tracks: Track[], pagination: Pagination } = await fetch(
-      `https://dab.yeet.su/api/search?q=${urlEncoded}&offset=${offset}&type=track`,
-      {
-        credentials: "include",
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (X11; Linux x86_64; rv:137.0) Gecko/20100101 Firefox/137.0",
-          Accept: "*/*",
-          "Accept-Language": "en-US,en;q=0.5",
-          "Sec-GPC": "1",
-          "Alt-Used": "dab.yeet.su",
-          "Sec-Fetch-Dest": "empty",
-          "Sec-Fetch-Mode": "cors",
-          "Sec-Fetch-Site": "same-origin",
-          Priority: "u=0",
+    console.log("Searching for ", urlEncoded);
+    const { tracks, pagination }: { tracks: Track[]; pagination: Pagination } =
+      await fetch(
+        `https://dab.yeet.su/api/search?q=${urlEncoded}&offset=${offset}&type=track`,
+        {
+          credentials: "include",
+          headers: {
+            "User-Agent":
+              "Mozilla/5.0 (X11; Linux x86_64; rv:137.0) Gecko/20100101 Firefox/137.0",
+            Accept: "*/*",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Sec-GPC": "1",
+            "Alt-Used": "dab.yeet.su",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            Priority: "u=0",
+          },
+          referrer: "https://dab.yeet.su/",
+          method: "GET",
+          mode: "cors",
         },
-        referrer: "https://dab.yeet.su/",
-        method: "GET",
-        mode: "cors",
-      },
-    ).then((r) => r.json());
+      ).then((r) => r.json());
 
     return { tracks, pagination };
   }

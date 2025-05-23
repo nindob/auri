@@ -19,7 +19,6 @@ export const handleSearch = async (req: Request, server: Server) => {
       return errorResponse("Missing or faulty 'offset' parameter", 400);
     }
 
-    
     // Run the search query
     const result = await SEARCH_SERVICE.search(query, Number(offset));
 
