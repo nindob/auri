@@ -79,7 +79,10 @@ export const Player = () => {
   // Reset slider position when track is deleted
   useEffect(() => {
     if (!selectedAudioId) {
+      // Reset all playback state
       setSliderPosition(0);
+      setTrackDuration(0);
+      setIsDragging(false);
     }
   }, [selectedAudioId]);
 

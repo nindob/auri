@@ -80,7 +80,7 @@ interface GlobalStateValues {
   isShuffled: boolean;
 }
 
-interface GlobalState extends GlobalStateValues {
+export interface GlobalState extends GlobalStateValues {
   // Methods
   setIsInitingSystem: (isIniting: boolean) => void;
   addToUploadHistory: (name: string, id: string) => void;
@@ -128,6 +128,7 @@ interface GlobalState extends GlobalStateValues {
   resetStore: () => void;
   deleteAudioSource: (audioId: string) => void;
 }
+
 // Audio sources
 const STATIC_AUDIO_SOURCES: StaticAudioSource[] = [
   {
@@ -973,11 +974,21 @@ export const useGlobalStore = create<GlobalState>((set, get) => {
           audioSources: audioSources.filter(source => source.id !== audioId),
           selectedAudioId: '', // Don't auto-select next track
           isPlaying: false,
-          currentTime: 0, // Reset slider position
+          currentTime: 0,
           playbackStartTime: 0,
           playbackOffset: 0,
-          duration: 0 // Reset duration when no track is selected
+          duration: 0
         });
+
+        // Reset audio context if it exists
+        if (state.audioPlayer?.audioContext) {
+          try {
+            state.audioPlayer.audioContext.suspend();
+            state.audioPlayer.audioContext.resume();
+          } catch (e) {
+            // Ignore errors if context is already suspended/resumed
+          }
+        }
       } else {
         // If deleting a non-selected track, just remove it
         set({
