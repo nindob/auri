@@ -1,40 +1,18 @@
-import type { Track } from "@auri/shared";
+import type { Pagination, DABTrack as Track } from "@auri/shared/types/schemas/dab"
 import { AUDIO_DIR } from "../config";
 import { mkdir } from "node:fs/promises";
 import * as path from "node:path";
-
-/**
- * Implementations of this interface should provide search functionality from a provider.
- */
-export interface SearchService {
-  /**
-   * Search a list of tracks from the provider.
-   * @param query Search query
-   */
-  search(query: string): Promise<Track[]>;
-}
-
-/**
- * Implementations of this interface shold provide download functionality from a provider
- */
-export interface MusicDownloader {
-  /**
-   * Downloads a track from the provider, returning the path of the downloaded file.
-   * @param trackId The ID of the track to be downloaded
-   * @returns the file ID of the downloaded track
-   */
-  download(trackId: number, name: string, roomId: string): Promise<string>;
-}
+import { DownloadService, SearchResult, SearchService } from "./interface";
 
 /**
  * Dab Music service that implements search and download functionality.
  */
-class DabMusicService implements SearchService, MusicDownloader {
-  async search(query: string): Promise<Track[]> {
+class DabMusicService implements SearchService, DownloadService {
+  async search(query: string, offset: number): Promise<SearchResult> {
     const urlEncoded = encodeURIComponent(query);
-
-    const { tracks }: { tracks: Track[] } = await fetch(
-      `https://dab.yeet.su/api/search?q=${urlEncoded}&offset=0&type=track`,
+    console.log("Searching for ", urlEncoded)
+    const { tracks, pagination }: { tracks: Track[], pagination: Pagination } = await fetch(
+      `https://dab.yeet.su/api/search?q=${urlEncoded}&offset=${offset}&type=track`,
       {
         credentials: "include",
         headers: {
@@ -55,7 +33,7 @@ class DabMusicService implements SearchService, MusicDownloader {
       },
     ).then((r) => r.json());
 
-    return tracks;
+    return { tracks, pagination };
   }
 
   async download(
@@ -130,4 +108,4 @@ class DabMusicService implements SearchService, MusicDownloader {
 const implementation = new DabMusicService();
 
 export const SEARCH_SERVICE: SearchService = implementation;
-export const MUSIC_DOWNLOADER: MusicDownloader = implementation;
+export const DOWNLOAD_SERVICE: DownloadService = implementation;
