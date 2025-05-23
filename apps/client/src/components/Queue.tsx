@@ -5,7 +5,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LocalAudioSource } from "@/lib/localTypes";
-import { cn, formatTime } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useGlobalStore } from "@/store/global";
 import { MoreHorizontal, Pause, Play, Trash2 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -16,7 +16,6 @@ export const Queue = ({ className, ...rest }: React.ComponentProps<"div">) => {
   const audioSources = useGlobalStore((state) => state.audioSources);
   const selectedAudioId = useGlobalStore((state) => state.selectedAudioId);
   const setSelectedAudioId = useGlobalStore((state) => state.setSelectedAudioId);
-  const isInitingSystem = useGlobalStore((state) => state.isInitingSystem);
   const broadcastPlay = useGlobalStore((state) => state.broadcastPlay);
   const broadcastPause = useGlobalStore((state) => state.broadcastPause);
   const isPlaying = useGlobalStore((state) => state.isPlaying);
