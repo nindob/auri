@@ -1,5 +1,5 @@
 import { DownloadTrackType, UploadAudioType } from "@auri/shared";
-import type { Track as DABTrack, Pagination } from "@auri/shared/types/schemas/dab"
+import type { DABTrack as Track, Pagination } from "@auri/shared/types/schemas/dab"
 import axios from "axios";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -55,7 +55,7 @@ export const fetchAudio = async (id: string) => {
   }
 };
 
-export const searchTracks = async (query: string, offset: number): Promise<{tracks: DABTrack[], pagination: Pagination}> => {
+export const searchTracks = async (query: string, offset: number): Promise<{tracks: Track[], pagination: Pagination}> => {
   const response = await fetch(`${BASE_URL}/search?query=${query}&offset=${offset}`, {
     method: "GET",
     headers: {
