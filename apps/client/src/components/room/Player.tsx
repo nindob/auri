@@ -38,7 +38,12 @@ export const Player = () => {
 
   // Find the selected audio source and its duration
   useEffect(() => {
-    if (!selectedAudioId) return;
+    if (!selectedAudioId) {
+      // Reset slider position and duration when no track is selected
+      setSliderPosition(0);
+      setTrackDuration(0);
+      return;
+    }
 
     const audioSource = audioSources.find(
       (source) => source.id === selectedAudioId
@@ -70,6 +75,13 @@ export const Player = () => {
 
     return () => clearInterval(interval);
   }, [isPlaying, getCurrentTrackPosition, isDragging]);
+
+  // Reset slider position when track is deleted
+  useEffect(() => {
+    if (!selectedAudioId) {
+      setSliderPosition(0);
+    }
+  }, [selectedAudioId]);
 
   // Handle slider change
   const handleSliderChange = useCallback((value: number[]) => {

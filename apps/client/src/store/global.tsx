@@ -126,6 +126,7 @@ interface GlobalState extends GlobalStateValues {
   skipToPreviousTrack: () => void;
   getCurrentGainValue: () => number;
   resetStore: () => void;
+  deleteAudioSource: (audioId: string) => void;
 }
 // Audio sources
 const STATIC_AUDIO_SOURCES: StaticAudioSource[] = [
@@ -151,7 +152,7 @@ const STATIC_AUDIO_SOURCES: StaticAudioSource[] = [
   },
   {
     name: "Assumptions (Slowed) - Sam Gellaitry",
-    url: "/Assumptions (Slowed).mp3",
+    url: "/Assumptions (Slowed) - Sam Gellaitry.mp3",
   },
   {
     name: "Laika Party - EMMY",
@@ -932,6 +933,57 @@ export const useGlobalStore = create<GlobalState>((set, get) => {
 
       // Reinitialize audio from scratch
       initializeAudio();
+    },
+
+    deleteAudioSource: (audioId: string) => {
+      const state = get();
+      const { audioSources, selectedAudioId, isPlaying } = state;
+
+      // Find the index of the track to delete
+      const indexToDelete = state.findAudioIndexById(audioId);
+      if (indexToDelete === null) return;
+
+      // If we're deleting the currently selected track
+      if (audioId === selectedAudioId) {
+        // Stop current playback if playing
+        if (isPlaying && state.audioPlayer) {
+          try {
+            state.audioPlayer.sourceNode.stop();
+          } catch (e) {
+            // Ignore errors if already stopped
+          }
+        }
+
+        // If this is the last track, just remove it and reset state
+        if (audioSources.length === 1) {
+          set({
+            audioSources: [],
+            selectedAudioId: '',
+            isPlaying: false,
+            currentTime: 0,
+            playbackStartTime: 0,
+            playbackOffset: 0,
+            duration: 0
+          });
+          return;
+        }
+
+        // Remove the track and reset playback state
+        set({
+          audioSources: audioSources.filter(source => source.id !== audioId),
+          selectedAudioId: '', // Don't auto-select next track
+          isPlaying: false,
+          currentTime: 0, // Reset slider position
+          playbackStartTime: 0,
+          playbackOffset: 0,
+          duration: 0 // Reset duration when no track is selected
+        });
+      } else {
+        // If deleting a non-selected track, just remove it
+        set({
+          audioSources: audioSources.filter(source => source.id !== audioId)
+        });
+      }
     },
   };
 });
