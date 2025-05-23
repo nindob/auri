@@ -1,11 +1,5 @@
 
-/**
- * Defines a track type fetched from the {@link SearchService}
- */
-export type Track = {
-    id: number;
-    name: string;
-}
+import { Track } from "@auri/shared";
 
 /**
  * Implementations of this interface should provide search functionality from a provider.
