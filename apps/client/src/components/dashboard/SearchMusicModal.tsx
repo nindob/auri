@@ -24,7 +24,13 @@ export const SearchMusicModal = ({opened, setOpened}: SearchMusicModalProps) => 
       .then(tracks => setSearchResult(tracks));
     }
 
-    return <Dialog open={opened} defaultOpen={false} onOpenChange={(o) => {setOpened(o)}}>
+    return <Dialog open={opened} defaultOpen={false} onOpenChange={(o) => {
+      if (!o) {
+        setSearchQuery("");
+        setSearchResult(null);
+      }
+      setOpened(o);
+      }}>
     <DialogContent className="sm:max-w-[425px]">
       <DialogHeader>
         <DialogTitle>Search tracks</DialogTitle>
