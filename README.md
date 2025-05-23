@@ -2,6 +2,8 @@
 
 Auri is a browser-based audio player optimized for seamless multi-device playback.
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/nindob/auri)
+
 ## Features
 
 - **Millisecond-accurate synchronization**: Abstracts [NTP-inspired](https://en.wikipedia.org/wiki/Network_Time_Protocol) time synchronization primitives to achieve a high degree of accuracy
