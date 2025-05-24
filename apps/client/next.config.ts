@@ -20,6 +20,13 @@ const nextConfig: NextConfig = {
   },
   // This is required to support PostHog trailing slash API requests
   skipTrailingSlashRedirect: true,
+  reactStrictMode: true,
+  experimental: {
+    appDir: true,
+  },
+  compiler: {
+    basePath: '/src',
+  },
 };
 
 export default nextConfig;
