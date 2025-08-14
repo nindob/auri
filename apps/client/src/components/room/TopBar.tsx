@@ -7,7 +7,7 @@ import { Github, Hash, Users } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
 import { SyncProgress } from "../ui/SyncProgress";
-import { QRCodeModal } from '../QRCodeModal';
+
 
 interface TopBarProps {
   roomId: string;
@@ -80,11 +80,7 @@ export const TopBar = ({ roomId }: TopBarProps) => {
           >
             Full Sync
           </button>
-          {/* Add QR Code Modal button */}
-          <div className="hidden md:block">|</div>
-          <div className="hidden md:block">
-            <QRCodeModal roomId={roomId} />
-          </div>
+
         </div>
 
         {/* GitHub icon in the top right */}

@@ -1,7 +1,4 @@
-import { handleGetAudio } from "./routes/audio";
-import { handleDownload } from "./routes/download";
 import { handleRoot } from "./routes/root";
-import { handleSearch } from "./routes/search";
 import { handleStats } from "./routes/stats";
 import { handleGetPresignedURL, handleUploadComplete } from "./routes/upload";
 import { handleWebSocketUpgrade } from "./routes/websocket";
@@ -40,13 +37,7 @@ const server = Bun.serve<WSData, undefined>({
           return handleUploadComplete(req, server);
 
         case "/stats":
-          return handleStats(req);
-        
-        case "/search":
-          return handleSearch(req, server);
-
-        case "/download":
-          return handleDownload(req, server);
+          return handleStats();
 
         default:
           return errorResponse("Not found", 404);

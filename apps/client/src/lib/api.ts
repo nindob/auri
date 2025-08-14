@@ -4,8 +4,6 @@ import {
   UploadCompleteType,
   UploadUrlResponseType,
 } from "@auri/shared";
-import { DownloadTrackType, UploadAudioType } from "@auri/shared";
-import type { DABTrack as Track, Pagination } from "@auri/shared/types/schemas/dab"
 import axios from "axios";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -87,35 +85,3 @@ export const fetchAudio = async (url: string) => {
     throw new Error(`Failed to fetch audio: ${error}`);
   }
 };
-
-export const searchTracks = async (query: string, offset: number): Promise<{tracks: Track[], pagination: Pagination}> => {
-  const response = await fetch(`${BASE_URL}/search?query=${query}&offset=${offset}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!response.ok) {
-    console.error(`RESPONSE NOT OK`);
-    throw new Error(`Failed to search tracks: ${response.statusText}`);
-  }
-
-  return await response.json();
-}
-
-export const downloadTrack = async (payload: DownloadTrackType) => {
-  const response = await fetch(`${BASE_URL}/download`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to download track: ${response.statusText}`);
-  }
-
-  return response.json();
-}

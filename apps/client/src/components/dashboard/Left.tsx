@@ -7,7 +7,7 @@ import { AudioUploaderMinimal } from "../AudioUploaderMinimal";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { AudioControls } from "./AudioControls";
-import { SearchMusic } from "./SearchMusic";
+
 
 interface LeftProps {
   className?: string;
@@ -60,7 +60,7 @@ export const Left = ({ className }: LeftProps) => {
           <span>Default Library</span>
         </Button>
 
-        <SearchMusic />
+
       </motion.div>
 
       <Separator className="bg-neutral-800/50" />
