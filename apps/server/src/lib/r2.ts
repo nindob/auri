@@ -18,7 +18,6 @@ import {
     SECRET_ACCESS_KEY: process.env.S3_SECRET_ACCESS_KEY!,
   };
   
-  // Create R2 client instance
   const r2Client = new S3Client({
     region: "auto",
     endpoint: S3_CONFIG.ENDPOINT,
