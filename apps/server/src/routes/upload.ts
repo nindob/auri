@@ -1,27 +1,34 @@
+import {
+  GetUploadUrlSchema,
+  UploadCompleteResponseType,
+  UploadCompleteSchema,
+  UploadUrlResponseType,
+} from "@auri/shared";
 import { Server } from "bun";
-
-import { UploadAudioSchema } from "@auri/shared";
-import { mkdir } from "node:fs/promises";
-import * as path from "path";
-import { AUDIO_DIR } from "../config";
+import {
+  generateAudioFileName,
+  generatePresignedUploadUrl,
+  getPublicAudioUrl,
+  validateR2Config,
+} from "../lib/r2";
 import { errorResponse, jsonResponse, sendBroadcast } from "../utils/responses";
 
-export const handleUpload = async (req: Request, server: Server) => {
+// New endpoint to get presigned upload URL
+export const handleGetPresignedURL = async (req: Request) => {
   try {
-    // Check if it's a POST request
     if (req.method !== "POST") {
       return errorResponse("Method not allowed", 405);
     }
 
-    // Check content type
-    const contentType = req.headers.get("content-type");
-    if (!contentType || !contentType.includes("application/json")) {
-      return errorResponse("Content-Type must be application/json", 400);
+    // Validate R2 configuration first
+    const r2Validation = validateR2Config();
+    if (!r2Validation.isValid) {
+      console.error("R2 configuration errors:", r2Validation.errors);
+      return errorResponse("R2 configuration not complete", 500);
     }
 
-    // Parse and validate the request body using Zod schema
-    const rawBody = await req.json();
-    const parseResult = UploadAudioSchema.safeParse(rawBody);
+    const body = await req.json();
+    const parseResult = GetUploadUrlSchema.safeParse(body);
 
     if (!parseResult.success) {
       return errorResponse(
@@ -30,26 +37,51 @@ export const handleUpload = async (req: Request, server: Server) => {
       );
     }
 
-    const { name, audioData, roomId } = parseResult.data;
+    const { roomId, fileName, contentType } = parseResult.data;
 
-    // Create room-specific directory if it doesn't exist
-    const roomDir = path.join(AUDIO_DIR, `room-${roomId}`);
-    await mkdir(roomDir, { recursive: true });
+    // Generate unique filename
+    const uniqueFileName = generateAudioFileName(fileName);
 
-    // Generate unique filename with timestamp
-    const timestamp = Date.now();
-    const ext = path.extname(name) || ".mp3"; // Preserve original extension or default to mp3
-    const filename = `${timestamp}${ext}`;
+    // Generate presigned URL for upload
+    const uploadUrl = await generatePresignedUploadUrl(
+      roomId,
+      uniqueFileName,
+      contentType
+    );
+    const publicUrl = getPublicAudioUrl(roomId, uniqueFileName);
 
-    // The ID that will be used for retrieving the file (includes room path)
-    const fileId = path.join(`room-${roomId}`, filename);
-    // Full path to the file
-    const filePath = path.join(AUDIO_DIR, fileId);
+    const response: UploadUrlResponseType = {
+      uploadUrl,
+      publicUrl,
+    };
 
-    // Decode base64 audio data and write to file using Bun.write
-    const audioBuffer = Buffer.from(audioData, "base64");
-    await Bun.write(filePath, audioBuffer);
+    return jsonResponse(response);
+  } catch (error) {
+    console.error("Error generating upload URL:", error);
+    return errorResponse("Failed to generate upload URL", 500);
+  }
+};
 
+// Endpoint to confirm successful upload and broadcast to room
+export const handleUploadComplete = async (req: Request, server: Server) => {
+  try {
+    if (req.method !== "POST") {
+      return errorResponse("Method not allowed", 405);
+    }
+
+    const body = await req.json();
+    const parseResult = UploadCompleteSchema.safeParse(body);
+
+    if (!parseResult.success) {
+      return errorResponse(
+        `Invalid request data: ${parseResult.error.message}`,
+        400
+      );
+    }
+
+    const { roomId, originalName, publicUrl } = parseResult.data;
+
+    // Broadcast to room that new audio is available
     sendBroadcast({
       server,
       roomId,
@@ -57,21 +89,19 @@ export const handleUpload = async (req: Request, server: Server) => {
         type: "ROOM_EVENT",
         event: {
           type: "NEW_AUDIO_SOURCE",
-          id: fileId,
-          title: name, // Keep original name for display
-          duration: 1, // TODO: lol calculate this later properly
+          id: publicUrl,
+          title: originalName,
+          duration: 1, // TODO: calculate this properly later
           addedAt: Date.now(),
           addedBy: roomId,
         },
       },
     });
 
-    // Return success response with the file details
-    return jsonResponse({
-      success: true,
-    }); // Wait for the broadcast to be received.
+    const response: UploadCompleteResponseType = { success: true };
+    return jsonResponse(response);
   } catch (error) {
-    console.error("Error handling upload:", error);
-    return errorResponse("Failed to process upload", 500);
+    console.error("Error confirming upload:", error);
+    return errorResponse("Failed to confirm upload", 500);
   }
 };

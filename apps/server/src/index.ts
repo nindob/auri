@@ -3,7 +3,7 @@ import { handleDownload } from "./routes/download";
 import { handleRoot } from "./routes/root";
 import { handleSearch } from "./routes/search";
 import { handleStats } from "./routes/stats";
-import { handleUpload } from "./routes/upload";
+import { handleGetPresignedURL, handleUploadComplete } from "./routes/upload";
 import { handleWebSocketUpgrade } from "./routes/websocket";
 import {
   handleClose,
@@ -33,11 +33,11 @@ const server = Bun.serve<WSData, undefined>({
         case "/ws":
           return handleWebSocketUpgrade(req, server);
 
-        case "/upload":
-          return handleUpload(req, server);
+        case "/upload/get-presigned-url":
+          return handleGetPresignedURL(req);
 
-        case "/audio":
-          return handleGetAudio(req, server);
+        case "/upload/complete":
+          return handleUploadComplete(req, server);
 
         case "/stats":
           return handleStats(req);
