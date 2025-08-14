@@ -153,10 +153,6 @@ import {
         return { deletedCount: 0 };
       }
   
-      console.log(
-        `Deleting ${objects.length} objects with prefix "${prefix}: ${objects}"`
-      );
-  
       // Prepare objects for batch deletion
       const objectsToDelete = objects.map((obj) => ({
         Key: obj.Key!,
@@ -190,10 +186,6 @@ import {
           );
         }
       }
-  
-      console.log(
-        `R2 cleanup with prefix "${prefix}": ${deletedCount} files deleted successfully`
-      );
   
       return { deletedCount };
     } catch (error) {
