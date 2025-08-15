@@ -12,10 +12,12 @@ export type UploadAudioType = z.infer<typeof UploadAudioSchema>;
 export const GetUploadUrlSchema = z.object({
   roomId: z.string(),
   fileName: z.string(),
-  contentType: z.string().refine(
-    (type) => type.startsWith("audio/"),
-    "Content type must be an audio mime type"
-  ),
+  contentType: z
+    .string()
+    .refine(
+      (type) => type.startsWith("audio/"),
+      "Content type must be an audio mime type"
+    ),
 });
 export type GetUploadUrlType = z.infer<typeof GetUploadUrlSchema>;
 
@@ -38,7 +40,9 @@ export type UploadCompleteType = z.infer<typeof UploadCompleteSchema>;
 export const UploadCompleteResponseSchema = z.object({
   success: z.boolean(),
 });
-export type UploadCompleteResponseType = z.infer<typeof UploadCompleteResponseSchema>;
+export type UploadCompleteResponseType = z.infer<
+  typeof UploadCompleteResponseSchema
+>;
 
 // Audio fetch request (unchanged)
 export const GetAudioSchema = z.object({
@@ -46,3 +50,10 @@ export const GetAudioSchema = z.object({
 });
 export type GetAudioType = z.infer<typeof GetAudioSchema>;
 
+// Default audio fetch response
+export const GetDefaultAudioSchema = z.array(
+  z.object({
+    url: z.string(),
+  })
+);
+export type GetDefaultAudioType = z.infer<typeof GetDefaultAudioSchema>;

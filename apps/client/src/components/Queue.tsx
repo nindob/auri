@@ -5,9 +5,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LocalAudioSource } from "@/lib/localTypes";
-import { cn } from "@/lib/utils";
+import { cn, formatTime } from "@/lib/utils";
 import { useGlobalStore } from "@/store/global";
-import { MoreHorizontal, Pause, Play, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pause, Play, UploadCloud } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { usePostHog } from "posthog-js/react";
 
@@ -15,11 +15,14 @@ export const Queue = ({ className, ...rest }: React.ComponentProps<"div">) => {
   const posthog = usePostHog();
   const audioSources = useGlobalStore((state) => state.audioSources);
   const selectedAudioId = useGlobalStore((state) => state.selectedAudioId);
-  const setSelectedAudioId = useGlobalStore((state) => state.setSelectedAudioId);
+  const setSelectedAudioId = useGlobalStore(
+    (state) => state.setSelectedAudioId
+  );
+  const isInitingSystem = useGlobalStore((state) => state.isInitingSystem);
   const broadcastPlay = useGlobalStore((state) => state.broadcastPlay);
   const broadcastPause = useGlobalStore((state) => state.broadcastPause);
   const isPlaying = useGlobalStore((state) => state.isPlaying);
-  const deleteAudioSource = useGlobalStore((state) => state.deleteAudioSource);
+  const reuploadAudio = useGlobalStore((state) => state.reuploadAudio);
 
   const handleItemClick = (source: LocalAudioSource) => {
     if (source.id === selectedAudioId) {
@@ -27,7 +30,7 @@ export const Queue = ({ className, ...rest }: React.ComponentProps<"div">) => {
         broadcastPause();
         posthog.capture("pause_track", { track_id: source.id });
       } else {
-        broadcastPlay(0); // Always start from beginning when resuming
+        broadcastPlay();
         posthog.capture("play_track", { track_id: source.id });
       }
     } else {
@@ -43,16 +46,11 @@ export const Queue = ({ className, ...rest }: React.ComponentProps<"div">) => {
     }
   };
 
-  const handleDelete = (sourceId: string, sourceName: string) => {
-    // If this is the currently playing track, pause it first
-    if (sourceId === selectedAudioId && isPlaying) {
-      broadcastPause();
-    }
-    
-    deleteAudioSource(sourceId);
-    
-    // Track delete event
-    posthog.capture("delete_track", {
+  const handleReupload = (sourceId: string, sourceName: string) => {
+    reuploadAudio(sourceId, sourceName);
+
+    // Track reupload event
+    posthog.capture("reupload_track", {
       track_id: sourceId,
       track_name: sourceName,
     });
@@ -84,20 +82,12 @@ export const Queue = ({ className, ...rest }: React.ComponentProps<"div">) => {
                       ? "text-white hover:bg-neutral-700/20"
                       : "text-neutral-300 hover:bg-neutral-700/20"
                   )}
+                  onClick={() => handleItemClick(source)}
                 >
                   {/* Track number / Play icon */}
-                  <div 
-                    className="w-6 h-6 flex-shrink-0 flex items-center justify-center relative cursor-pointer select-none"
-                    onClick={() => handleItemClick(source)}
-                  >
+                  <div className="w-6 h-6 flex-shrink-0 flex items-center justify-center relative cursor-default select-none">
                     {/* Play/Pause button (shown on hover) */}
-                    <button 
-                      className="text-white text-sm hover:scale-110 transition-transform w-full h-full flex items-center justify-center absolute inset-0 opacity-0 group-hover:opacity-100 select-none"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleItemClick(source);
-                      }}
-                    >
+                    <button className="text-white text-sm hover:scale-110 transition-transform w-full h-full flex items-center justify-center absolute inset-0 opacity-0 group-hover:opacity-100 select-none">
                       {isSelected && isPlaying ? (
                         <Pause className="fill-current size-3.5 stroke-1" />
                       ) : (
@@ -127,10 +117,7 @@ export const Queue = ({ className, ...rest }: React.ComponentProps<"div">) => {
                   </div>
 
                   {/* Track name */}
-                  <div 
-                    className="flex-1 min-w-0 ml-3 select-none cursor-pointer"
-                    onClick={() => handleItemClick(source)}
-                  >
+                  <div className="flex-grow min-w-0 ml-3 select-none">
                     <div
                       className={cn(
                         "font-medium text-sm truncate select-none",
@@ -141,21 +128,36 @@ export const Queue = ({ className, ...rest }: React.ComponentProps<"div">) => {
                     </div>
                   </div>
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-2">
+                  {/* Duration & Optional Re-upload Menu */}
+                  <div className="ml-4 flex items-center gap-2">
+                    <div className="text-xs text-neutral-500 select-none">
+                      {formatTime(source.audioBuffer.duration)}
+                    </div>
+
+                    {/* Dropdown for re-uploading - Always shown */}
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button className="p-1.5 rounded-md hover:bg-neutral-700/20 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <MoreHorizontal className="h-4 w-4" />
+                      <DropdownMenuTrigger
+                        asChild
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <button className="p-1 rounded-full text-neutral-500 hover:text-white transition-colors hover:scale-110 duration-150 focus:outline-none focus:text-white focus:scale-110">
+                          <MoreHorizontal className="size-4" />
                         </button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuContent
+                        side="top"
+                        align="center"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <DropdownMenuItem
-                          onClick={() => handleDelete(source.id, source.name)}
-                          className="cursor-pointer text-red-500 focus:text-red-500"
+                          onSelect={() =>
+                            handleReupload(source.id, source.name)
+                          }
+                          className="flex items-center gap-2 cursor-pointer text-sm"
+                          disabled={source.id.includes("default/")}
                         >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          <span>Delete</span>
+                          <UploadCloud className="size-3.5 text-neutral-400" />
+                          <span>Reupload to room</span>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -168,12 +170,9 @@ export const Queue = ({ className, ...rest }: React.ComponentProps<"div">) => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-8 text-neutral-400"
+            className="text-center py-3 text-neutral-400 select-none"
           >
-            <div className="space-y-2">
-              <p className="text-sm">No tracks in your library</p>
-              <p className="text-xs">Upload your own music or search for tracks to get started</p>
-            </div>
+            {isInitingSystem ? "Loading tracks..." : "No tracks available"}
           </motion.div>
         )}
       </div>

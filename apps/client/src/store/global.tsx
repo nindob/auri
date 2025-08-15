@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { LocalAudioSource, RawAudioSource } from "@/lib/localTypes";
+import { fetchDefaultAudioSources } from "@/lib/api";
 import {
   NTPMeasurement,
   _sendNTPRequest,
@@ -17,16 +18,11 @@ import {
 import { toast } from "sonner";
 import { create } from "zustand";
 import { useRoomStore } from "./room";
+import { extractDefaultFileName } from "@/lib/utils";
 
 export const MAX_NTP_MEASUREMENTS = 40;
 
 // https://webaudioapi.com/book/Web_Audio_API_Boris_Smus_html/ch02.html
-
-interface StaticAudioSource {
-  name: string;
-  url: string;
-  id: string;
-}
 
 interface AudioPlayerState {
   audioContext: AudioContext;
@@ -80,7 +76,7 @@ interface GlobalStateValues {
   isShuffled: boolean;
 }
 
-export interface GlobalState extends GlobalStateValues {
+interface GlobalState extends GlobalStateValues {
   // Methods
   setIsInitingSystem: (isIniting: boolean) => void;
   addToUploadHistory: (name: string, id: string) => void;
@@ -126,43 +122,7 @@ export interface GlobalState extends GlobalStateValues {
   skipToPreviousTrack: () => void;
   getCurrentGainValue: () => number;
   resetStore: () => void;
-  deleteAudioSource: (audioId: string) => void;
 }
-
-// Audio sources
-const STATIC_AUDIO_SOURCES: StaticAudioSource[] = [
-  {
-    name: "4EVA - Ordley",
-    url: "/4EVA.mp3",
-  },
-  {
-    name: "Love for You - loveli lori & ovg!",
-    url: "/love for you.mp3",
-  },
-  {
-    name: "I LOVE YOU SO JUMPSTYLE (Slowed) - HUSSVRX",
-    url: "/I LOVE YOU SO JUMPSTYLE (Slowed).mp3",
-  },
-  {
-    name: "Heartbreaker - Bimini",
-    url: "/Heartbreaker - Bimini.mp3",
-  },
-  {
-    name: "say you'll never leave - jigitz",
-    url: "/say you'll never leave - jigitz.mp3",
-  },
-  {
-    name: "Assumptions (Slowed) - Sam Gellaitry",
-    url: "/Assumptions (Slowed) - Sam Gellaitry.mp3",
-  },
-  {
-    name: "Laika Party - EMMY",
-    url: "/Laika Party - EMMY.mp3",
-  },
-].map((source, index) => ({
-  ...source,
-  id: `static-${index}`,
-}));
 
 // Define initial state values
 const initialState: GlobalStateValues = {
@@ -171,7 +131,7 @@ const initialState: GlobalStateValues = {
   currentTime: 0,
   playbackStartTime: 0,
   playbackOffset: 0,
-  selectedAudioId: STATIC_AUDIO_SOURCES[0].id,
+  selectedAudioId: "",
 
   // Spatial audio
   isShuffled: false,
@@ -228,20 +188,20 @@ const getWaitTimeSeconds = (state: GlobalState, targetServerTime: number) => {
   return waitTimeMilliseconds / 1000;
 };
 
-const loadAudioSource = async ({
-  source,
+const loadAudioSourceUrl = async ({
+  url,
   audioContext,
 }: {
-  source: StaticAudioSource;
+  url: string;
   audioContext: AudioContext;
 }) => {
-  const response = await fetch(source.url);
+  const response = await fetch(url);
   const arrayBuffer = await response.arrayBuffer();
   const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
   return {
-    name: source.name,
+    name: extractDefaultFileName(url),
     audioBuffer,
-    id: source.id,
+    id: url,
   };
 };
 
@@ -255,6 +215,11 @@ export const useGlobalStore = create<GlobalState>((set, get) => {
   // Function to initialize or reinitialize audio system
   const initializeAudio = async () => {
     console.log("initializeAudio()");
+
+    // Fetch default audio sources from server
+    const defaultSources = await fetchDefaultAudioSources();
+    console.log("defaultSources", defaultSources);
+
     // Create fresh audio context
     const audioContext = initializeAudioContext();
 
@@ -264,8 +229,8 @@ export const useGlobalStore = create<GlobalState>((set, get) => {
     const sourceNode = audioContext.createBufferSource();
 
     // Load first source
-    const firstSource = await loadAudioSource({
-      source: STATIC_AUDIO_SOURCES[0],
+    const firstSource = await loadAudioSourceUrl({
+      url: defaultSources[0].url,
       audioContext,
     });
 
@@ -283,15 +248,17 @@ export const useGlobalStore = create<GlobalState>((set, get) => {
       },
       downloadedAudioIds: new Set<string>(),
       duration: firstSource.audioBuffer.duration,
+      selectedAudioId: firstSource.id, // Set the first loaded audio as selected
     });
+
     console.log(`${0} Decoded source ${firstSource.name}`);
 
     // Load rest asynchronously, keep updating state
-    for (let i = 1; i < STATIC_AUDIO_SOURCES.length; i++) {
-      const source = STATIC_AUDIO_SOURCES[i];
+    for (let i = 1; i < defaultSources.length; i++) {
+      const { url } = defaultSources[i];
       const state = get();
-      const loadedSource = await loadAudioSource({
-        source,
+      const loadedSource = await loadAudioSourceUrl({
+        url,
         audioContext,
       });
       set({ audioSources: [...state.audioSources, loadedSource] });
@@ -934,67 +901,6 @@ export const useGlobalStore = create<GlobalState>((set, get) => {
 
       // Reinitialize audio from scratch
       initializeAudio();
-    },
-
-    deleteAudioSource: (audioId: string) => {
-      const state = get();
-      const { audioSources, selectedAudioId, isPlaying } = state;
-
-      // Find the index of the track to delete
-      const indexToDelete = state.findAudioIndexById(audioId);
-      if (indexToDelete === null) return;
-
-      // If we're deleting the currently selected track
-      if (audioId === selectedAudioId) {
-        // Stop current playback if playing
-        if (isPlaying && state.audioPlayer) {
-          try {
-            state.audioPlayer.sourceNode.stop();
-          } catch (e) {
-            // Ignore errors if already stopped
-          }
-        }
-
-        // If this is the last track, just remove it and reset state
-        if (audioSources.length === 1) {
-          set({
-            audioSources: [],
-            selectedAudioId: '',
-            isPlaying: false,
-            currentTime: 0,
-            playbackStartTime: 0,
-            playbackOffset: 0,
-            duration: 0
-          });
-          return;
-        }
-
-        // Remove the track and reset playback state
-        set({
-          audioSources: audioSources.filter(source => source.id !== audioId),
-          selectedAudioId: '', // Don't auto-select next track
-          isPlaying: false,
-          currentTime: 0,
-          playbackStartTime: 0,
-          playbackOffset: 0,
-          duration: 0
-        });
-
-        // Reset audio context if it exists
-        if (state.audioPlayer?.audioContext) {
-          try {
-            state.audioPlayer.audioContext.suspend();
-            state.audioPlayer.audioContext.resume();
-          } catch (e) {
-            // Ignore errors if context is already suspended/resumed
-          }
-        }
-      } else {
-        // If deleting a non-selected track, just remove it
-        set({
-          audioSources: audioSources.filter(source => source.id !== audioId)
-        });
-      }
     },
   };
 });
