@@ -13,6 +13,10 @@ export const PositionSchema = z.object({
 });
 export type PositionType = z.infer<typeof PositionSchema>;
 
+export const AudioSourceSchema = z.object({
+  url: z.string(),
+});
+export type AudioSourceType = z.infer<typeof AudioSourceSchema>;
 
 /**
  * Defines a track type.

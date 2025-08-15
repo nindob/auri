@@ -1,4 +1,4 @@
-import { GetDefaultAudioType } from "@auri/shared";
+import { AudioSourceType, GetDefaultAudioType } from "@auri/shared";
 import { listObjectsWithPrefix } from "../lib/r2";
 import { jsonResponse, errorResponse } from "../utils/responses";
 
