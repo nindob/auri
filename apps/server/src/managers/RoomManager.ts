@@ -5,6 +5,7 @@ import {
     PositionType,
     WSBroadcastType,
     NTP_CONSTANTS,
+    RoomType,
   } from "@auri/shared";
   import { GRID } from "@auri/shared/types/basic";
   import { Server, ServerWebSocket } from "bun";
@@ -147,13 +148,17 @@ import {
     /**
      * Get room statistics
      */
-    getStats() {
+    getStats(): RoomType {
       return {
         roomId: this.roomId,
         clientCount: this.clients.size,
         audioSourceCount: this.audioSources.length,
         hasSpatialAudio: !!this.intervalId,
       };
+    }
+  
+    getNumClients(): number {
+      return this.clients.size;
     }
   
     /**
