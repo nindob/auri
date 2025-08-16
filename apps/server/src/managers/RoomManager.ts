@@ -85,6 +85,12 @@ import {
       return this.audioSources;
     }
   
+    // Set all audio sources (used in backup restoration)
+    setAudioSources(sources: AudioSourceType[]): AudioSourceType[] {
+      this.audioSources = sources;
+      return this.audioSources;
+    }
+  
     /**
      * Get all clients in the room
      */
