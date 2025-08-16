@@ -13,7 +13,7 @@ export const AnnouncementBanner = () => {
       <div className="relative">
         <div className="container mx-auto px-4 py-3">
           <p className="text-xs sm:text-sm font-medium text-center">
-            <span className="font-semibold">{"Jul 14:"}</span> Custom audio
+            <span className="font-semibold">{"Aug 14:"}</span> Custom audio
             uploads are automatically sent to new clients and persist across
             reloads.
             {/* <a
